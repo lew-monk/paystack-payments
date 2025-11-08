@@ -37,8 +37,11 @@ jobs:
           username: ${{ vars.DIGITALOCEAN_USERNAME }}
           key: ${{ secrets.DIGITALOCEAN_SSH_KEY }}
           passphrase: ${{ secrets.DIGITALOCEAN_PASSPHRASE }}
+          env:
+            DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
           script: |
             cd /var/apps/prod/paystack
+            sudo docker login registry.digitalocean.com -u _ -p $DIGITALOCEAN_ACCESS_TOKEN
             docker pull ${{ vars.REGISTRY_NAME }}/paystack_api:$(echo $GITHUB_SHA | head -c7)
             sudo docker compose up --force-recreate -d api
             sudo docker container prune -f
