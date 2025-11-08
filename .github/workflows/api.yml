@@ -4,8 +4,6 @@ on:
       - main
     paths:
       - "apps/api/**"
-      - "apps/shared/**"
-      - "apps/worker/**"
       - ".github/workflows/api.yml"
       - "Dockerfile.workspace"
 jobs:
@@ -21,10 +19,28 @@ jobs:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: Build container image
-        run: docker build -t ${{ vars.REGISTRY_NAME }}/paystack_api:$(echo $GITHUB_SHA | head -c7) .
+        run:  docker build -f Dockerfile.workspace --build-arg APP_PATH=apps/api -t ${{ vars.REGISTRY_NAME }}/paystack_api:$(echo $GITHUB_SHA | head -c7) .
 
       - name: Log in to DigitalOcean Container Registry with short-lived credentials
         run: doctl registry login --expiry-seconds 1200
 
       - name: Push image to DigitalOcean Container Registry
         run: docker push ${{ vars.REGISTRY_NAME }}/paystack_api:$(echo $GITHUB_SHA | head -c7)
+
+    deploy:
+      runs-on: ubuntu-latest
+      needs: build
+      steps:
+        - name: Login to DigitalOcean Server
+          uses: appleboy/ssh-action@master
+          with:
+            host: ${{ vars.DIGITALOCEAN_HOST }}
+            username: ${{ vars.DIGITALOCEAN_USERNAME }}
+            key: ${{ secrets.DIGITALOCEAN_SSH_KEY }}
+            script: |
+              cd /var/apps/prod/paystack
+              docker pull ${{ vars.REGISTRY_NAME }}/paystack_api:$(echo $GITHUB_SHA | head -c7)
+              sudo docker compose up --force-recreate -d api
+              sudo docker container prune -f
+              sudo docker image prune -f
+
