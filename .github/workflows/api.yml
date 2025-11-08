@@ -38,7 +38,7 @@ jobs:
           key: ${{ secrets.DIGITALOCEAN_SSH_KEY }}
           passphrase: ${{ secrets.DIGITALOCEAN_PASSPHRASE }}
           script: |
-            cd /var/apps/prod/paystack
+            cd /apps/prod/paystack
             sudo docker login registry.digitalocean.com -u ${{ vars.DIGITALOCEAN_EMAIL }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
             docker pull ${{ vars.REGISTRY_NAME }}/paystack_api:api
             sudo docker compose up --force-recreate -d api
