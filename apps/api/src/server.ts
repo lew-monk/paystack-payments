@@ -6,7 +6,10 @@ import { initTransaction } from "@shared/src/paystack";
 
 const app = new Elysia()
 	.use(cors())
-	.get("/healthz", () => ({ ok: true }))
+	.get("/healthz", () => {
+		console.log("healthz");
+		return { ok: true };
+	})
 	.post(
 		"/payments/start",
 		async ({ body, set }) => {
