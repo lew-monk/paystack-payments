@@ -35,6 +35,7 @@ const app = new Elysia()
 					callback_url: body.callback_url,
 					metadata: body.metadata
 				});
+				console.log("data", data);
 				return data;
 			} catch (e: any) {
 				set.status = 502;

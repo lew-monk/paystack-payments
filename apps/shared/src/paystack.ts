@@ -1,4 +1,4 @@
-import { Paystack } from "paystack-sdk";
+import { Paystack } from "@shared/paystack";
 
 export type InitTxInput = {
 	email: string;
@@ -19,11 +19,12 @@ let client: Paystack | null = null;
 
 export function getPaystack() {
 	if (client) return client;
-	const key = process.env.PAYSTACK_SECRET_KEY;
-	if (!key) {
+	const BASEURL = process.env.PAYSTACK_BASE_URL || "https://api.paystack.co";
+	const KEY = process.env.PAYSTACK_SECRET_KEY;
+	if (!KEY) {
 		throw new Error("PAYSTACK_SECRET_KEY is not set");
 	}
-	client = new Paystack(key);
+	client = new Paystack(KEY, BASEURL);
 	return client;
 }
 

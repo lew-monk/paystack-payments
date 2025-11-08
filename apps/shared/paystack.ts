@@ -1,4 +1,23 @@
-import { Paystack } from "paystack-sdk";
-const SECRET = process.env.PAYSTACK_SECRET_KEY!;
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { Transaction } from './src/lib/transaction/transaction';
 
-export const paystack = new Paystack(SECRET);
+
+export class Paystack {
+	private readonly http: AxiosInstance;
+	public transaction: Transaction;
+	constructor(private readonly key: string, private readonly baseURL: string) {
+		this.http = axios.create({
+			baseURL: this.baseURL,
+			headers: {
+				Authorization: `Bearer ${this.key}`,
+				'Content-Type': 'application/json',
+			},
+		});
+		this.http.interceptors.response.use(
+			(response: AxiosResponse) => response.data,
+		);
+
+		this.transaction = new Transaction(this.http);
+	}
+}
+
