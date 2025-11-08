@@ -27,6 +27,8 @@ jobs:
       - name: Push image to DigitalOcean Container Registry
         run: docker push ${{ vars.REGISTRY_NAME }}/paystack_api:$(echo $GITHUB_SHA | head -c7)
   deploy:
+    env:
+      DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -37,8 +39,6 @@ jobs:
           username: ${{ vars.DIGITALOCEAN_USERNAME }}
           key: ${{ secrets.DIGITALOCEAN_SSH_KEY }}
           passphrase: ${{ secrets.DIGITALOCEAN_PASSPHRASE }}
-          env:
-            - DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
           script: |
             cd /var/apps/prod/paystack
             sudo docker login registry.digitalocean.com -u _ -p $DIGITALOCEAN_ACCESS_TOKEN
