@@ -38,7 +38,7 @@ jobs:
           key: ${{ secrets.DIGITALOCEAN_SSH_KEY }}
           passphrase: ${{ secrets.DIGITALOCEAN_PASSPHRASE }}
           env:
-            DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+            - DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
           script: |
             cd /var/apps/prod/paystack
             sudo docker login registry.digitalocean.com -u _ -p $DIGITALOCEAN_ACCESS_TOKEN
