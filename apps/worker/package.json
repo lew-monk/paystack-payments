@@ -1,0 +1,13 @@
+{
+  "name": "worker",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --hot src/worker.ts",
+    "start": "bun src/worker.ts"
+  },
+  "dependencies": {
+    "bullmq": "^5.7.0",
+    "ioredis": "^5.4.1",
+     "paystack-sdk": "^3.2.0"
+  }
+}

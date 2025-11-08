@@ -1,0 +1,14 @@
+{
+  "name": "api",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --hot src/server.ts",
+    "start": "bun src/server.ts"
+  },
+  "dependencies": {
+    "@elysiajs/cors": "^1.0.2",
+    "bullmq": "^5.7.0",
+    "elysia": "^1.1.21",
+    "ioredis": "^5.4.1"
+  }
+}

@@ -1,0 +1,74 @@
+version: "3.9"
+
+services:
+  redis:
+    image: bitnami/redis:latest
+    restart: unless-stopped
+    environment:
+      - ALLOW_EMPTY_PASSWORD=no
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PORT_NUMBER=6379
+      - REDIS_AOF_ENABLED=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHALL,FLUSHDB,CONFIG,SHUTDOWN,SLAVEOF,MONITOR
+    command:
+      - /opt/bitnami/scripts/redis/run.sh
+      - --appendonly yes
+      - --save 900 1
+      - --save 300 10
+      - --save 60 10000
+      - --maxmemory 512mb
+      - --maxmemory-policy noeviction
+      - --protected-mode yes
+    volumes:
+      - redis-data:/bitnami/redis/data
+    networks: [internal]
+
+  bullboard:
+    container_name: bullboard
+    image: deadly0/bull-board
+    restart: always
+    ports:
+      - 4000:3000
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: replace-with-64-char-random
+      REDIS_USE_TLS: 'false'
+      BULL_PREFIX: bullmq:prod
+    depends_on:
+      - redis
+    networks: [internal]
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.workspace
+      args:
+        APP_PATH: apps/api
+    env_file: .env
+    depends_on: [redis]
+    ports:
+      - "3000:3000"
+    networks: [internal]
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.workspace
+      args:
+        APP_PATH: apps/worker
+    env_file: .env
+    depends_on: [redis]
+    networks: [internal]
+    restart: unless-stopped
+    environment:
+      - MSGPACKR_EXTRACT_FAILURES=soft
+      - npm_config_build_from_source=falses-stopped
+
+volumes:
+  redis-data:
+
+networks:
+  internal:
+    driver: bridge
