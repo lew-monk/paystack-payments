@@ -1,0 +1,47 @@
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/worker/**"
+      - ".github/workflows/worker.yml"
+      - "Dockerfile.workspace"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@main
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Build container image
+        run:  docker build -f Dockerfile.workspace --build-arg APP_PATH=apps/api -t ${{ vars.REGISTRY_NAME }}/paystack_api:worker .
+
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login --expiry-seconds 1200
+
+      - name: Push image to DigitalOcean Container Registry
+        run: docker push ${{ vars.REGISTRY_NAME }}/paystack_api:worker
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Login to DigitalOcean Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.DIGITALOCEAN_HOST }}
+          username: ${{ vars.DIGITALOCEAN_USERNAME }}
+          key: ${{ secrets.DIGITALOCEAN_SSH_KEY }}
+          passphrase: ${{ secrets.DIGITALOCEAN_PASSPHRASE }}
+          script: |
+            cd /var/apps/prod/paystack
+            sudo docker login registry.digitalocean.com -u ${{ vars.DIGITALOCEAN_EMAIL }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+            docker pull ${{ vars.REGISTRY_NAME }}/paystack_api:worker
+            sudo docker compose up --force-recreate -d worker
+            sudo docker container prune -f
+            sudo docker image prune -f
+
