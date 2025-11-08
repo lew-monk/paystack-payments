@@ -36,6 +36,7 @@ jobs:
           host: ${{ vars.DIGITALOCEAN_HOST }}
           username: ${{ vars.DIGITALOCEAN_USERNAME }}
           key: ${{ secrets.DIGITALOCEAN_SSH_KEY }}
+          passphrase: ${{ secrets.DIGITALOCEAN_PASSPHRASE }}
           script: |
             cd /var/apps/prod/paystack
             docker pull ${{ vars.REGISTRY_NAME }}/paystack_api:$(echo $GITHUB_SHA | head -c7)
