@@ -1,0 +1,30 @@
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/api/**"
+      - "apps/shared/**"
+      - "apps/worker/**"
+      - ".github/workflows/api.yml"
+      - "Dockerfile.workspace"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@main
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Build container image
+        run: docker build -t ${{ vars.REGISTRY_NAME }}/paystack_api:$(echo $GITHUB_SHA | head -c7) .
+
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login --expiry-seconds 1200
+
+      - name: Push image to DigitalOcean Container Registry
+        run: docker push ${{ vars.REGISTRY_NAME }}/paystack_api:$(echo $GITHUB_SHA | head -c7)
