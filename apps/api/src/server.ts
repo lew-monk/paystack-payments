@@ -10,6 +10,19 @@ const app = new Elysia()
 		console.log("healthz");
 		return { ok: true };
 	})
+	.post("/healthz", ({ body }) => {
+		console.log("healthz");
+		return { ok: body };
+	}, {
+		body: t.Object({
+			email: t.String(),
+			amount: t.Number(),
+			reference: t.Optional(t.String()),
+			currency: t.Optional(t.String()),
+			callback_url: t.Optional(t.String()),
+			metadata: t.Optional(t.Record(t.String(), t.Any()))
+		})
+	})
 	.post(
 		"/payments/start",
 		async ({ body, set }) => {
