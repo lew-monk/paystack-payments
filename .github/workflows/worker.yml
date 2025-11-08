@@ -19,7 +19,7 @@ jobs:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: Build container image
-        run:  docker build -f Dockerfile.workspace --build-arg APP_PATH=apps/api -t ${{ vars.REGISTRY_NAME }}/paystack_api:worker .
+        run:  docker build -f Dockerfile.workspace --build-arg APP_PATH=apps/worker -t ${{ vars.REGISTRY_NAME }}/paystack_api:worker .
 
       - name: Log in to DigitalOcean Container Registry with short-lived credentials
         run: doctl registry login --expiry-seconds 1200
