@@ -19,7 +19,7 @@ jobs:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: Build container image
-        run:  docker build -f Dockerfile.workspace --build-arg APP_PATH=apps/api -t ${{ vars.REGISTRY_NAME }}/paystack_api:$(echo $GITHUB_SHA | head -c7) .
+        run:  docker build -f Dockerfile.workspace --build-arg APP_PATH=apps/api -t ${{ vars.REGISTRY_NAME }}/paystack_api:api-$(echo $GITHUB_SHA | head -c7) .
 
       - name: Log in to DigitalOcean Container Registry with short-lived credentials
         run: doctl registry login --expiry-seconds 1200
@@ -40,7 +40,7 @@ jobs:
           script: |
             cd /var/apps/prod/paystack
             sudo docker login registry.digitalocean.com -u ${{ vars.DIGITALOCEAN_EMAIL }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-            docker pull ${{ vars.REGISTRY_NAME }}/paystack_api:$(echo $GITHUB_SHA | head -c7)
+            docker pull ${{ vars.REGISTRY_NAME }}/paystack_api:api-$(echo $GITHUB_SHA | head -c7)
             sudo docker compose up --force-recreate -d api
             sudo docker container prune -f
             sudo docker image prune -f
