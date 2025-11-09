@@ -37,7 +37,7 @@ const app = new Elysia()
 				});
 				return data;
 			} catch (e: any) {
-				set.status = 502;
+				set.status = e.response?.status ?? e.response.status ?? 500;
 				return { error: e.response?.data ?? e.response.data ?? "init failed" };
 			}
 		},
