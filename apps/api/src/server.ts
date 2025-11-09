@@ -75,4 +75,10 @@ const app = new Elysia()
 	});
 
 app.listen(Bun.env.PORT || 3000);
+
+app.onError(({ code, error, request }) => {
+	console.error("Elysia error", code, request.method, request.url, error);
+	return { error: "internal_error" };
+});
+
 console.log(`API on :${Bun.env.PORT || 3000}`);
