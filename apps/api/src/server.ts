@@ -2,7 +2,7 @@ import { Elysia, t } from "elysia";
 import cors from "@elysiajs/cors";
 import { verifyPaystackSignature } from "./signature";
 import { paymentsQueue } from "@shared/queues";
-import { initTransaction } from "@shared/index";
+import { Paystack } from "./paystack/service";
 
 const app = new Elysia()
 	.use(cors())
@@ -10,36 +10,14 @@ const app = new Elysia()
 		console.log("healthz");
 		return { ok: true };
 	})
-	.post("/healthz", ({ body }) => {
-		console.log("healthz");
-		return { ok: body };
-	}, {
-		body: t.Object({
-			email: t.String(),
-			amount: t.Number(),
-			reference: t.Optional(t.String()),
-			currency: t.Optional(t.String()),
-			callback_url: t.Optional(t.String()),
-			metadata: t.Optional(t.Record(t.String(), t.Any()))
-		})
-	})
 	.post(
 		"/payments/start",
-		async ({ body, set }) => {
-			try {
-				const data = await initTransaction({
-					email: body.email,
-					amount: body.amount,
-					reference: body.reference,
-					currency: body.currency,
-					callback_url: body.callback_url,
-					metadata: body.metadata
-				});
-				return data;
-			} catch (e: any) {
-				set.status = e.response?.status ?? e.response.status ?? 500;
-				return { error: e.response?.data ?? e.response.data ?? "init failed" };
+		async ({ body }) => {
+			const res = await Paystack.initializeTransaction(body);
+			if (!res.status) {
+				return res;
 			}
+			return res
 		},
 		{
 			body: t.Object({
@@ -54,7 +32,7 @@ const app = new Elysia()
 	)
 	.post("/webhooks/paystack", async ({ request, set }) => {
 		const WEBHOOK_SECRET = Bun.env.PAYSTACK_WEBHOOK_SECRET || "";
-		const raw = new Uint8Array(await request.arrayBuffer());
+		const raw = new Uint8Array(await request.json());
 		const sig = request.headers.get("x-paystack-signature") || undefined;
 
 		if (!verifyPaystackSignature(raw, sig, WEBHOOK_SECRET)) {
