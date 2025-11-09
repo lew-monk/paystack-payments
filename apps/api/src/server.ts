@@ -2,7 +2,7 @@ import { Elysia, t } from "elysia";
 import cors from "@elysiajs/cors";
 import { verifyPaystackSignature } from "./signature";
 import { paymentsQueue } from "@shared/queues";
-import { initTransaction } from "@shared/src/paystack";
+import { initTransaction } from "@shared/index";
 
 const app = new Elysia()
 	.use(cors())
@@ -35,11 +35,10 @@ const app = new Elysia()
 					callback_url: body.callback_url,
 					metadata: body.metadata
 				});
-				console.log("data", data);
 				return data;
 			} catch (e: any) {
 				set.status = 502;
-				return { error: e.message ?? "init failed" };
+				return { error: e.response?.data ?? e.response.data ?? "init failed" };
 			}
 		},
 		{
