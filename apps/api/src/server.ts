@@ -23,8 +23,8 @@ const app = new Elysia()
 			body: t.Object({
 				email: t.String(),
 				amount: t.Number(),
-				reference: t.Optional(t.String()),
-				currency: t.Optional(t.String()),
+				reference: t.String(),
+				currency: t.String(),
 				callback_url: t.Optional(t.String()),
 				metadata: t.Optional(t.Record(t.String(), t.Any()))
 			})
