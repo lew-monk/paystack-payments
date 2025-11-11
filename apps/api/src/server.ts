@@ -30,6 +30,13 @@ const app = new Elysia()
 			})
 		}
 	)
+	.post("/payments/verify/:reference", async ({ params }) => {
+		const res = await Paystack.verify(params.reference);
+		if (!res.status) {
+			return false
+		}
+		return res.status
+	})
 	.post("/api/v1/paystack/webhooks", async ({ request, set }) => {
 		const WEBHOOK_SECRET = Bun.env.PAYSTACK_WEBHOOK_SECRET || "";
 		const raw = new Uint8Array(await request.json());
@@ -46,8 +53,15 @@ const app = new Elysia()
 			`${event?.event || "evt"}:` +
 			`${event?.data?.reference || event?.data?.id || crypto.randomUUID()}`;
 
+		let verify = await Paystack.verify(event.data.reference);
+		if (!verify.status) {
+			console.log(Array(20).fill("=").join(""));
+			console.log("Transaction not complete", verify.message);
+			console.log(Array(20).fill("=").join(""));
+			set.status = 400;
+			return { status: false, message: "Transaction not complete" }
+		}
 		await paymentsQueue.add("paystack-event", event, { jobId });
-
 		set.status = 200;
 		return "ok";
 	});

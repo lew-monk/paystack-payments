@@ -1,5 +1,5 @@
 
-import { initTransaction, InitTxInput } from "@shared/index";
+import { initTransaction, InitTxInput, verifyTransaction } from "@shared/index";
 import { BadRequest } from "@shared/src/lib/models/interface";
 import { TransactionInitialized } from "@shared/src/lib/models/transaction/interface";
 
@@ -14,6 +14,26 @@ export abstract class Paystack {
 				callback_url: body.callback_url,
 				metadata: body.metadata
 			});
+			if (data.status) {
+				return data;
+			}
+			return {
+				data: data.data,
+				status: false,
+				message: "Something went wrong"
+			}
+		}
+		catch (e: any) {
+			return {
+				data: e.response?.data,
+				status: e.response?.status,
+				message: e.response?.message
+			};
+		}
+	}
+	static async verify(reference: string): Promise<any | BadRequest> {
+		try {
+			const data = await verifyTransaction(reference);
 			if (data.status) {
 				return data;
 			}
