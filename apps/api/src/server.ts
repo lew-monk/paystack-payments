@@ -30,7 +30,7 @@ const app = new Elysia()
 			})
 		}
 	)
-	.post("/webhooks/paystack", async ({ request, set }) => {
+	.post("/api/v1/paystack/webhooks", async ({ request, set }) => {
 		const WEBHOOK_SECRET = Bun.env.PAYSTACK_WEBHOOK_SECRET || "";
 		const raw = new Uint8Array(await request.json());
 		const sig = request.headers.get("x-paystack-signature") || undefined;
