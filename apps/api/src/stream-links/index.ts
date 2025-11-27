@@ -5,7 +5,7 @@ const streams = new Elysia().post(
 	"/stream-links/generate-passcode",
 	async ({ body }) => {
 		const res = await streamLinksQueue.add("stream-links-event", body);
-		return res;
+		return { ok: true };
 	},
 	{
 		body: t.Object({
