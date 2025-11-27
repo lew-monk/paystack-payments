@@ -5,7 +5,7 @@ const prefix = process.env.BULLMQ_PREFIX || "bullmq:prod";
 
 const defaultJobOptions: JobsOptions = {
 	attempts: 5,
-	backoff: { type: "exponential", delay: 2000 },
+	backoff: { type: "exponential", delay: 1000 * 60 * 5 },
 	removeOnComplete: true,
 	removeOnFail: { age: 86400 },
 };
@@ -24,4 +24,5 @@ export const paymentsEvents = new QueueEvents("payments", {
 export const streamLinksQueue = new Queue("streams", {
 	connection,
 	prefix,
+	defaultJobOptions,
 });
