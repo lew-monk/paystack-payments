@@ -3,9 +3,11 @@ import cors from "@elysiajs/cors";
 import { verifyPaystackSignature } from "./signature";
 import { paymentsQueue } from "@shared/queues";
 import { Paystack } from "./paystack/service";
+import streams from "./stream-links";
 
 const app = new Elysia()
 	.use(cors())
+	.use(streams)
 	.get("/healthz", () => {
 		console.log("healthz");
 		return { ok: true };
@@ -17,7 +19,7 @@ const app = new Elysia()
 			if (!res.status) {
 				return res;
 			}
-			return res
+			return res;
 		},
 		{
 			body: t.Object({
@@ -26,16 +28,16 @@ const app = new Elysia()
 				reference: t.String(),
 				currency: t.String(),
 				callback_url: t.Optional(t.String()),
-				metadata: t.Optional(t.Record(t.String(), t.Any()))
-			})
-		}
+				metadata: t.Optional(t.Record(t.String(), t.Any())),
+			}),
+		},
 	)
 	.post("/payments/verify/:reference", async ({ params }) => {
 		const res = await Paystack.verify(params.reference);
 		if (!res.status) {
-			return false
+			return false;
 		}
-		return res.status
+		return res.status;
 	})
 	.post("/api/v1/paystack/webhooks", async ({ request, set }) => {
 		const WEBHOOK_SECRET = Bun.env.PAYSTACK_WEBHOOK_SECRET || "";
@@ -59,7 +61,7 @@ const app = new Elysia()
 			console.log("Transaction not complete", verify.message);
 			console.log(Array(20).fill("=").join(""));
 			set.status = 400;
-			return { status: false, message: "Transaction not complete" }
+			return { status: false, message: "Transaction not complete" };
 		}
 		await paymentsQueue.add("paystack-event", event, { jobId });
 		set.status = 200;

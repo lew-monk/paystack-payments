@@ -13,10 +13,15 @@ const defaultJobOptions: JobsOptions = {
 export const paymentsQueue = new Queue("payments", {
 	connection,
 	prefix,
-	defaultJobOptions
+	defaultJobOptions,
 });
 
 export const paymentsEvents = new QueueEvents("payments", {
 	connection,
-	prefix
+	prefix,
+});
+
+export const streamLinksQueue = new Queue("streams", {
+	connection,
+	prefix,
 });
