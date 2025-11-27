@@ -73,6 +73,7 @@ const streamLinksWorker = new Worker<JobData>(
 			const streamLinkResponse = await axios.post(
 				`${process.env.MTICKETS_PROCESS_WEBHOOKS}/api/vi/webhooks/process/`,
 				{
+					type: "stream.link.created",
 					data: {
 						eventId: job.data.data.eventId,
 						name: job.data.data.assignedToName,
