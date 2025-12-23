@@ -77,7 +77,7 @@ const streamLinksWorker = new Worker<JobData>(
 			}
 
 			const streamLinkResponse = await axios.post(
-				`${process.env.MTICKETS_PROCESS_WEBHOOKS}/api/vi/webhooks/process/`,
+				`${process.env.MTICKETS_PROCESS_WEBHOOKS}`,
 				{
 					type: "stream.link.created",
 					data: {
@@ -89,12 +89,17 @@ const streamLinksWorker = new Worker<JobData>(
 				},
 			);
 			if (streamLinkResponse.status !== 200) {
+				await job.moveToFailed(
+					new Error("Stream links failed"),
+					job.data.data.transactionId,
+					false,
+				);
 				console.error(
 					"Stream links failed",
 					streamLinkResponse.status,
 					streamLinkResponse.data,
 				);
-				throw new Error("Stream links failed");
+				return;
 			}
 
 			console.log("stream-links-event", streamLinkResponse.data);
