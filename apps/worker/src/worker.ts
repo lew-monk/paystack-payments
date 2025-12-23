@@ -66,7 +66,7 @@ const streamLinksWorker = new Worker<JobData>(
 					},
 				},
 			);
-			if (res.status !== 200) {
+			if (res.status !== 201) {
 				console.error("Stream links failed", res.status, res.data);
 				await job.moveToFailed(
 					new Error("Stream links failed"),
