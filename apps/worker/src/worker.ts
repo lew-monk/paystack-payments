@@ -102,7 +102,7 @@ const streamLinksWorker = new Worker<JobData>(
 				return;
 			}
 
-			console.log("stream-links-event", res.data);
+			console.log("stream-links-event", streamLinkResponse.data);
 		} else {
 			console.log("Unhandled event", evt);
 		}
