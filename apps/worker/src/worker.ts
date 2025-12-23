@@ -45,7 +45,6 @@ worker.on("failed", (job, err) =>
 const streamLinksWorker = new Worker<JobData>(
 	"streams",
 	async (job) => {
-		console.log("stream-links-event", job);
 		const evt = job.data?.event;
 		if (evt === "stream-links-event") {
 			let res = await axios.post(
@@ -72,8 +71,6 @@ const streamLinksWorker = new Worker<JobData>(
 				job.retry("failed");
 				return;
 			}
-
-			console.log("stream-links-event", res.data);
 
 			const streamLinkResponse = await axios.post(
 				`${process.env.MTICKETS_PROCESS_WEBHOOKS}/api/vi/webhooks/process/`,
