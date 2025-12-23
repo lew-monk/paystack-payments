@@ -68,7 +68,11 @@ const streamLinksWorker = new Worker<JobData>(
 			);
 			if (res.status !== 200) {
 				console.error("Stream links failed", res.status, res.data);
-				job.retry("failed");
+				await job.moveToFailed(
+					new Error("Stream links failed"),
+					job.data.data.transactionId,
+					false,
+				);
 				return;
 			}
 
@@ -85,12 +89,16 @@ const streamLinksWorker = new Worker<JobData>(
 				},
 			);
 			if (streamLinkResponse.status !== 200) {
+				await job.moveToFailed(
+					new Error("Stream links failed"),
+					job.data.data.transactionId,
+					false,
+				);
 				console.error(
 					"Stream links failed",
 					streamLinkResponse.status,
 					streamLinkResponse.data,
 				);
-				job.retry("failed");
 				return;
 			}
 
