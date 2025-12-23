@@ -89,17 +89,12 @@ const streamLinksWorker = new Worker<JobData>(
 				},
 			);
 			if (streamLinkResponse.status !== 200) {
-				await job.moveToFailed(
-					new Error("Stream links failed"),
-					job.data.data.transactionId,
-					false,
-				);
 				console.error(
 					"Stream links failed",
 					streamLinkResponse.status,
 					streamLinkResponse.data,
 				);
-				return;
+				throw new Error("Stream links failed");
 			}
 
 			console.log("stream-links-event", streamLinkResponse.data);
