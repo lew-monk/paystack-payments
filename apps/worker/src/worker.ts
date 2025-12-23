@@ -50,7 +50,7 @@ const streamLinksWorker = new Worker<JobData>(
 			let res = await axios.post(
 				`${process.env.STREAMLINK_API_URL}/api/streams/${job.data.data.event}/passcodes`,
 				{
-					assignedTo: job.data.data.assignedTo,
+					// assignedTo: job.data.data.assignedTo,
 					assignedEmail: job.data.data.assignedToEmail,
 					assignedToName: job.data.data.assignedToName,
 					max_uses: 1,
