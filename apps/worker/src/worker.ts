@@ -82,6 +82,7 @@ const streamLinksWorker = new Worker<JobData>(
 					type: "stream.link.created",
 					data: {
 						eventId: job.data.data.eventId,
+						email: job.data.data.assignedToEmail,
 						name: job.data.data.assignedToName,
 						transactionId: job.data.data.transactionId,
 						passcodes: res.data.passcodes,
