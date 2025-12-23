@@ -84,7 +84,7 @@ const streamLinksWorker = new Worker<JobData>(
 						eventId: job.data.data.eventId,
 						name: job.data.data.assignedToName,
 						transactionId: job.data.data.transactionId,
-						passcodes: res.data.passcode,
+						passcodes: res.data.passcodes,
 					},
 				},
 			);
