@@ -46,6 +46,7 @@ const streamLinksWorker = new Worker<JobData>(
 	"streams",
 	async (job) => {
 		const evt = job.data?.event;
+		console.log(evt);
 		if (evt === "stream-links-event") {
 			let res = await axios.post(
 				`${process.env.STREAMLINK_API_URL}/api/streams/${job.data.data.event}/passcodes`,
