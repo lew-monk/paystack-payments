@@ -8,6 +8,7 @@ const streams = new Elysia().post(
 			event: "stream-links-event",
 			data: body,
 		};
+		console.log(data)
 		const res = await streamLinksQueue.add("stream-links-event", data);
 		return { ok: true, id: res.id };
 	},
