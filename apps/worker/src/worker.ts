@@ -63,7 +63,7 @@ const streamLinksWorker = new Worker<JobData>(
 				{
 					headers: {
 						"Content-Type": "application/json",
-						"x-api-key": process.env.STREAMLINK_API_KEY,
+						"x-api-key": "mtv__9eb6d5e7388ce750988ccf14000d998da7e8c7acb766fe1d",
 					},
 				},
 			);
