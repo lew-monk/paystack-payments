@@ -49,7 +49,7 @@ const streamLinksWorker = new Worker<JobData>(
 		console.log(evt);
 		if (evt === "stream-links-event") {
 			let res = await axios.post(
-				`${process.env.STREAMLINK_API_URL}/api/streams/${job.data.data.event}/passcodes`,
+				`https://mtv-api.wynda.africa/api/streams/${job.data.data.event}/passcodes`,
 				{
 					assignedTo: "",
 					assignedEmail: job.data.data.assignedToEmail,
