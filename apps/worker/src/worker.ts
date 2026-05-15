@@ -78,7 +78,7 @@ const streamLinksWorker = new Worker<JobData>(
 			}
 
 			const streamLinkResponse = await axios.post(
-				`${process.env.MTICKETS_PROCESS_WEBHOOKS}`,
+				`https://gig.mtickets.com/api/v1/webhooks/process`,
 				{
 					type: "stream.link.created",
 					data: {
